@@ -20,3 +20,6 @@ function App() {
 }
 
 export default App;
+import PerfilDinamico from './pages/PerfilDinamico';
+
+<Route path="/perfil/:id" element={<PerfilDinamico />} />
