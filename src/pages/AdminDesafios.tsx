@@ -171,7 +171,7 @@ function AdminDesafios() {
           <li key={d.id} style={{ marginBottom: 16, background: '#fff', padding: 16, borderRadius: 12 }}>
             <strong>{d.titulo}</strong>
             <br />
-            {d.perguntas.length} perguntas
+            {d.perguntas?.length || 0} perguntas
             <div style={{ marginTop: 8 }}>
               <button onClick={() => editarDesafio(d)} style={{ ...buttonStyle, marginRight: 8 }}>✏️ Editar</button>
               <button onClick={() => deletarDesafio(d.id)} style={buttonStyle}>🗑️ Apagar</button>
