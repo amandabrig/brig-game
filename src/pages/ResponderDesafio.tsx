@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 function ResponderDesafio() {
-  const [tipo, setTipo] = useState<'quiz' | 'upload'>('quiz'); // Aqui futuramente virá da base de dados
+  const [tipo] = useState<'quiz' | 'upload'>('quiz'); // Aqui futuramente virá da base de dados
   const [respostaSelecionada, setRespostaSelecionada] = useState<number | null>(null);
   const [arquivo, setArquivo] = useState<File | null>(null);
 
