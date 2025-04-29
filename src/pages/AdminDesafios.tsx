@@ -1,106 +1,146 @@
- import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+type TipoDesafio = 'quiz' | 'texto' | 'upload';
+
+interface Desafio {
+  id: number;
+  tipo: TipoDesafio;
+  titulo: string;
+  descricao: string;
+  pergunta?: string;
+  alternativas?: string[];
+  correta?: number;
+}
 
 function AdminDesafios() {
-  const [tipo, setTipo] = useState<'quiz' | 'upload'>('quiz');
+  const [desafios, setDesafios] = useState<Desafio[]>([]);
+  const [criando, setCriando] = useState(false);
+  const [tipo, setTipo] = useState<TipoDesafio>('quiz');
   const [titulo, setTitulo] = useState('');
   const [descricao, setDescricao] = useState('');
   const [pergunta, setPergunta] = useState('');
   const [alternativas, setAlternativas] = useState(['', '', '', '']);
   const [correta, setCorreta] = useState(0);
-  const [arquivo, setArquivo] = useState<File | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    const desafiosSalvos = localStorage.getItem('desafios');
+    if (desafiosSalvos) {
+      setDesafios(JSON.parse(desafiosSalvos));
+    }
+  }, []);
+
+  const handleSalvar = (e: React.FormEvent) => {
     e.preventDefault();
-    const desafio = {
+    const novoDesafio: Desafio = {
+      id: Date.now(),
       tipo,
       titulo,
       descricao,
-      ...(tipo === 'quiz'
-        ? { pergunta, alternativas, correta }
-        : { arquivo }),
+      ...(tipo === 'quiz' && { pergunta, alternativas, correta }),
     };
-    console.log('Desafio criado:', desafio);
+    const atualizados = [...desafios, novoDesafio];
+    setDesafios(atualizados);
+    localStorage.setItem('desafios', JSON.stringify(atualizados));
+    resetarFormulario();
+  };
+
+  const resetarFormulario = () => {
+    setCriando(false);
+    setTipo('quiz');
+    setTitulo('');
+    setDescricao('');
+    setPergunta('');
+    setAlternativas(['', '', '', '']);
+    setCorreta(0);
   };
 
   return (
     <div style={pageStyle}>
-      <h1 style={titleStyle}>Criar Novo Desafio</h1>
-      <form onSubmit={handleSubmit} style={formStyle}>
-        <input
-          type="text"
-          placeholder="Título do desafio"
-          value={titulo}
-          onChange={(e) => setTitulo(e.target.value)}
-          style={inputStyle}
-          required
-        />
+      <h1 style={titleStyle}>Administração de Desafios</h1>
 
-        <textarea
-          placeholder="Descrição do desafio"
-          value={descricao}
-          onChange={(e) => setDescricao(e.target.value)}
-          style={textareaStyle}
-          required
-        />
+      {!criando && (
+        <button style={buttonStyle} onClick={() => setCriando(true)}>
+          Novo Desafio
+        </button>
+      )}
 
-        <label style={labelStyle}>
-          Tipo:
-          <select value={tipo} onChange={(e) => setTipo(e.target.value as 'quiz' | 'upload')} style={inputStyle}>
-            <option value="quiz">Quiz</option>
+      {criando && (
+        <form onSubmit={handleSalvar} style={formStyle}>
+          <select value={tipo} onChange={(e) => setTipo(e.target.value as TipoDesafio)} style={inputStyle}>
+            <option value="quiz">Múltipla escolha</option>
+            <option value="texto">Resposta aberta</option>
             <option value="upload">Envio de arquivo</option>
           </select>
-        </label>
 
-        {tipo === 'quiz' && (
-          <>
-            <input
-              type="text"
-              placeholder="Pergunta"
-              value={pergunta}
-              onChange={(e) => setPergunta(e.target.value)}
-              style={inputStyle}
-              required
-            />
-            {alternativas.map((alt, i) => (
+          <input
+            type="text"
+            placeholder="Título"
+            value={titulo}
+            onChange={(e) => setTitulo(e.target.value)}
+            style={inputStyle}
+            required
+          />
+
+          <textarea
+            placeholder="Descrição"
+            value={descricao}
+            onChange={(e) => setDescricao(e.target.value)}
+            style={textareaStyle}
+            required
+          />
+
+          {tipo === 'quiz' && (
+            <>
               <input
-                key={i}
                 type="text"
-                placeholder={`Alternativa ${i + 1}`}
-                value={alt}
-                onChange={(e) => {
-                  const novas = [...alternativas];
-                  novas[i] = e.target.value;
-                  setAlternativas(novas);
-                }}
+                placeholder="Pergunta"
+                value={pergunta}
+                onChange={(e) => setPergunta(e.target.value)}
                 style={inputStyle}
                 required
               />
-            ))}
-            <label style={labelStyle}>
-              Resposta correta:
-              <select value={correta} onChange={(e) => setCorreta(Number(e.target.value))} style={inputStyle}>
-                {[0, 1, 2, 3].map((i) => (
-                  <option key={i} value={i}>Alternativa {i + 1}</option>
-                ))}
-              </select>
-            </label>
-          </>
-        )}
+              {alternativas.map((alt, i) => (
+                <input
+                  key={i}
+                  type="text"
+                  placeholder={`Alternativa ${i + 1}`}
+                  value={alt}
+                  onChange={(e) => {
+                    const novas = [...alternativas];
+                    novas[i] = e.target.value;
+                    setAlternativas(novas);
+                  }}
+                  style={inputStyle}
+                  required
+                />
+              ))}
+              <label style={labelStyle}>
+                Resposta correta:
+                <select value={correta} onChange={(e) => setCorreta(Number(e.target.value))} style={inputStyle}>
+                  {[0, 1, 2, 3].map((i) => (
+                    <option key={i} value={i}>
+                      Alternativa {i + 1}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </>
+          )}
 
-        {tipo === 'upload' && (
-          <label style={labelStyle}>
-            Upload do exemplo ou material:
-            <input
-              type="file"
-              onChange={(e) => setArquivo(e.target.files?.[0] || null)}
-              style={inputStyle}
-              required
-            />
-          </label>
-        )}
+          <button type="submit" style={buttonStyle}>
+            Salvar
+          </button>
+        </form>
+      )}
 
-        <button type="submit" style={buttonStyle}>Salvar Desafio</button>
-      </form>
+      <h2 style={{ marginTop: '32px' }}>Desafios Cadastrados</h2>
+      <ul style={listStyle}>
+        {desafios.map((d) => (
+          <li key={d.id} style={itemStyle}>
+            <strong>{d.titulo}</strong> — {d.tipo === 'quiz' ? 'Múltipla escolha' : d.tipo === 'texto' ? 'Resposta aberta' : 'Upload'}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
@@ -150,7 +190,20 @@ const buttonStyle: React.CSSProperties = {
   borderRadius: '8px',
   fontSize: '16px',
   cursor: 'pointer',
+};
+
+const listStyle: React.CSSProperties = {
+  listStyle: 'none',
+  padding: 0,
   marginTop: '20px',
+};
+
+const itemStyle: React.CSSProperties = {
+  marginBottom: '10px',
+  backgroundColor: '#fff',
+  borderRadius: '8px',
+  padding: '12px',
+  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
 };
 
 export default AdminDesafios;
