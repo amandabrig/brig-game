@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 interface AlunoPerfil {
   nome: string;
@@ -8,21 +9,25 @@ interface AlunoPerfil {
   cursos: string[];
 }
 
-function Progresso() {
+function PerfilDinamico() {
+  const { id } = useParams();
   const [aluno, setAluno] = useState<AlunoPerfil | null>(null);
 
   useEffect(() => {
-    const dados = localStorage.getItem('alunoAtual');
-    if (dados) setAluno(JSON.parse(dados));
-  }, []);
+    const dados = localStorage.getItem('alunos');
+    if (dados && id) {
+      const lista: AlunoPerfil[] = JSON.parse(dados);
+      const encontrado = lista.find((a) => a.usuario.replace('@', '') === id);
+      if (encontrado) setAluno(encontrado);
+    }
+  }, [id]);
 
-  if (!aluno) return <p style={pageStyle}>Carregando progresso...</p>;
+  if (!aluno) return <p style={pageStyle}>Carregando perfil...</p>;
 
   return (
     <div style={pageStyle}>
-      <h1>Seu Progresso</h1>
-      <p><strong>Nome:</strong> {aluno.nome}</p>
-      <p><strong>@:</strong> {aluno.usuario}</p>
+      <h1>{aluno.nome}</h1>
+      <p><strong>@{aluno.usuario}</strong></p>
       <p><strong>Pontos:</strong> {aluno.pontos}</p>
 
       <h3>Conquistas</h3>
@@ -58,4 +63,4 @@ const pageStyle: React.CSSProperties = {
   color: '#5C4A35',
 };
 
-export default Progresso;
+export default PerfilDinamico;
