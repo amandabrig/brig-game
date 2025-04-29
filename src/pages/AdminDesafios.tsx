@@ -1,143 +1,181 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
-type TipoDesafio = 'quiz' | 'texto' | 'upload';
+type TipoPergunta = 'quiz' | 'texto' | 'upload';
 
-interface Desafio {
+interface Pergunta {
   id: number;
-  tipo: TipoDesafio;
-  titulo: string;
-  descricao: string;
-  pergunta?: string;
+  tipo: TipoPergunta;
+  enunciado: string;
   alternativas?: string[];
   correta?: number;
 }
 
+interface Desafio {
+  id: number;
+  titulo: string;
+  descricao: string;
+  perguntas: Pergunta[];
+}
+
 function AdminDesafios() {
   const [desafios, setDesafios] = useState<Desafio[]>([]);
-  const [criando, setCriando] = useState(false);
-  const [tipo, setTipo] = useState<TipoDesafio>('quiz');
+  const [editandoId, setEditandoId] = useState<number | null>(null);
   const [titulo, setTitulo] = useState('');
   const [descricao, setDescricao] = useState('');
-  const [pergunta, setPergunta] = useState('');
+  const [perguntas, setPerguntas] = useState<Pergunta[]>([]);
+  const [tipo, setTipo] = useState<TipoPergunta>('quiz');
+  const [enunciado, setEnunciado] = useState('');
   const [alternativas, setAlternativas] = useState(['', '', '', '']);
   const [correta, setCorreta] = useState(0);
 
   useEffect(() => {
-    const desafiosSalvos = localStorage.getItem('desafios');
-    if (desafiosSalvos) {
-      setDesafios(JSON.parse(desafiosSalvos));
-    }
+    const dados = localStorage.getItem('desafios');
+    if (dados) setDesafios(JSON.parse(dados));
   }, []);
 
-  const handleSalvar = (e: React.FormEvent) => {
-    e.preventDefault();
-    const novoDesafio: Desafio = {
+  const salvarDesafios = (lista: Desafio[]) => {
+    setDesafios(lista);
+    localStorage.setItem('desafios', JSON.stringify(lista));
+  };
+
+  const adicionarPergunta = () => {
+    const nova: Pergunta = {
       id: Date.now(),
       tipo,
+      enunciado,
+      ...(tipo === 'quiz' && { alternativas, correta }),
+    };
+    setPerguntas([...perguntas, nova]);
+    setEnunciado('');
+    setAlternativas(['', '', '', '']);
+    setCorreta(0);
+    setTipo('quiz');
+  };
+
+  const salvarDesafio = () => {
+    const desafio: Desafio = {
+      id: editandoId ?? Date.now(),
       titulo,
       descricao,
-      ...(tipo === 'quiz' && { pergunta, alternativas, correta }),
+      perguntas,
     };
-    const atualizados = [...desafios, novoDesafio];
-    setDesafios(atualizados);
-    localStorage.setItem('desafios', JSON.stringify(atualizados));
+
+    let atualizados = [...desafios];
+    if (editandoId) {
+      atualizados = atualizados.map((d) => (d.id === editandoId ? desafio : d));
+    } else {
+      atualizados.push(desafio);
+    }
+
+    salvarDesafios(atualizados);
     resetarFormulario();
   };
 
   const resetarFormulario = () => {
-    setCriando(false);
-    setTipo('quiz');
+    setEditandoId(null);
     setTitulo('');
     setDescricao('');
-    setPergunta('');
-    setAlternativas(['', '', '', '']);
-    setCorreta(0);
+    setPerguntas([]);
+  };
+
+  const deletarDesafio = (id: number) => {
+    const restante = desafios.filter((d) => d.id !== id);
+    salvarDesafios(restante);
+  };
+
+  const editarDesafio = (d: Desafio) => {
+    setEditandoId(d.id);
+    setTitulo(d.titulo);
+    setDescricao(d.descricao);
+    setPerguntas(d.perguntas);
   };
 
   return (
-    <div style={pageStyle}>
-      <h1 style={titleStyle}>Administração de Desafios</h1>
+    <div style={{ padding: 32, background: '#F5F0EB', minHeight: '100vh' }}>
+      <h1>Administração de Desafios</h1>
 
-      {!criando && (
-        <button style={buttonStyle} onClick={() => setCriando(true)}>
-          Novo Desafio
-        </button>
-      )}
+      <div style={{ marginTop: 24, background: '#fff', padding: 24, borderRadius: 12 }}>
+        <h2>{editandoId ? 'Editar' : 'Novo'} Desafio</h2>
+        <input
+          value={titulo}
+          onChange={(e) => setTitulo(e.target.value)}
+          placeholder="Título"
+          style={inputStyle}
+        />
+        <textarea
+          value={descricao}
+          onChange={(e) => setDescricao(e.target.value)}
+          placeholder="Descrição"
+          style={{ ...inputStyle, height: 60 }}
+        />
 
-      {criando && (
-        <form onSubmit={handleSalvar} style={formStyle}>
-          <select value={tipo} onChange={(e) => setTipo(e.target.value as TipoDesafio)} style={inputStyle}>
-            <option value="quiz">Múltipla escolha</option>
-            <option value="texto">Resposta aberta</option>
-            <option value="upload">Envio de arquivo</option>
-          </select>
+        <h3 style={{ marginTop: 16 }}>Adicionar Pergunta</h3>
+        <select value={tipo} onChange={(e) => setTipo(e.target.value as TipoPergunta)} style={inputStyle}>
+          <option value="quiz">Múltipla escolha</option>
+          <option value="texto">Resposta aberta</option>
+          <option value="upload">Envio de arquivo</option>
+        </select>
 
-          <input
-            type="text"
-            placeholder="Título"
-            value={titulo}
-            onChange={(e) => setTitulo(e.target.value)}
-            style={inputStyle}
-            required
-          />
+        <input
+          value={enunciado}
+          onChange={(e) => setEnunciado(e.target.value)}
+          placeholder="Enunciado da pergunta"
+          style={inputStyle}
+        />
 
-          <textarea
-            placeholder="Descrição"
-            value={descricao}
-            onChange={(e) => setDescricao(e.target.value)}
-            style={textareaStyle}
-            required
-          />
-
-          {tipo === 'quiz' && (
-            <>
+        {tipo === 'quiz' && (
+          <>
+            {alternativas.map((alt, i) => (
               <input
-                type="text"
-                placeholder="Pergunta"
-                value={pergunta}
-                onChange={(e) => setPergunta(e.target.value)}
+                key={i}
+                value={alt}
+                placeholder={`Alternativa ${i + 1}`}
+                onChange={(e) => {
+                  const novas = [...alternativas];
+                  novas[i] = e.target.value;
+                  setAlternativas(novas);
+                }}
                 style={inputStyle}
-                required
               />
-              {alternativas.map((alt, i) => (
-                <input
-                  key={i}
-                  type="text"
-                  placeholder={`Alternativa ${i + 1}`}
-                  value={alt}
-                  onChange={(e) => {
-                    const novas = [...alternativas];
-                    novas[i] = e.target.value;
-                    setAlternativas(novas);
-                  }}
-                  style={inputStyle}
-                  required
-                />
+            ))}
+            <select value={correta} onChange={(e) => setCorreta(Number(e.target.value))} style={inputStyle}>
+              {[0, 1, 2, 3].map((i) => (
+                <option key={i} value={i}>
+                  Correta: Alternativa {i + 1}
+                </option>
               ))}
-              <label style={labelStyle}>
-                Resposta correta:
-                <select value={correta} onChange={(e) => setCorreta(Number(e.target.value))} style={inputStyle}>
-                  {[0, 1, 2, 3].map((i) => (
-                    <option key={i} value={i}>
-                      Alternativa {i + 1}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </>
-          )}
+            </select>
+          </>
+        )}
 
-          <button type="submit" style={buttonStyle}>
-            Salvar
-          </button>
-        </form>
-      )}
+        <button onClick={adicionarPergunta} style={buttonStyle}>
+          Adicionar Pergunta
+        </button>
 
-      <h2 style={{ marginTop: '32px' }}>Desafios Cadastrados</h2>
-      <ul style={listStyle}>
+        <ul>
+          {perguntas.map((p) => (
+            <li key={p.id} style={{ marginTop: 12 }}>
+              ✅ [{p.tipo}] {p.enunciado}
+            </li>
+          ))}
+        </ul>
+
+        <button onClick={salvarDesafio} style={buttonStyle}>
+          {editandoId ? 'Atualizar' : 'Salvar'} Desafio
+        </button>
+      </div>
+
+      <h2 style={{ marginTop: 40 }}>Desafios Cadastrados</h2>
+      <ul>
         {desafios.map((d) => (
-          <li key={d.id} style={itemStyle}>
-            <strong>{d.titulo}</strong> — {d.tipo === 'quiz' ? 'Múltipla escolha' : d.tipo === 'texto' ? 'Resposta aberta' : 'Upload'}
+          <li key={d.id} style={{ marginBottom: 16, background: '#fff', padding: 16, borderRadius: 12 }}>
+            <strong>{d.titulo}</strong>
+            <br />
+            {d.perguntas.length} perguntas
+            <div style={{ marginTop: 8 }}>
+              <button onClick={() => editarDesafio(d)} style={{ ...buttonStyle, marginRight: 8 }}>✏️ Editar</button>
+              <button onClick={() => deletarDesafio(d.id)} style={buttonStyle}>🗑️ Apagar</button>
+            </div>
           </li>
         ))}
       </ul>
@@ -145,65 +183,22 @@ function AdminDesafios() {
   );
 }
 
-const pageStyle: React.CSSProperties = {
-  backgroundColor: '#F5F0EB',
-  minHeight: '100vh',
-  padding: '32px',
-  fontFamily: 'sans-serif',
-  color: '#5C4A35',
-};
-
-const titleStyle: React.CSSProperties = {
-  fontSize: '24px',
-  marginBottom: '24px',
-};
-
-const formStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '12px',
-  maxWidth: '500px',
-};
-
 const inputStyle: React.CSSProperties = {
   padding: '10px',
-  borderRadius: '8px',
+  margin: '6px 0',
+  borderRadius: '6px',
   border: '1px solid #C2B6A3',
-  fontSize: '16px',
-};
-
-const textareaStyle: React.CSSProperties = {
-  ...inputStyle,
-  minHeight: '80px',
-};
-
-const labelStyle: React.CSSProperties = {
-  fontSize: '16px',
-  marginTop: '12px',
+  width: '100%',
 };
 
 const buttonStyle: React.CSSProperties = {
+  marginTop: 12,
+  padding: '10px 20px',
   backgroundColor: '#7A6855',
   color: '#fff',
-  padding: '12px',
   border: 'none',
-  borderRadius: '8px',
-  fontSize: '16px',
+  borderRadius: 8,
   cursor: 'pointer',
-};
-
-const listStyle: React.CSSProperties = {
-  listStyle: 'none',
-  padding: 0,
-  marginTop: '20px',
-};
-
-const itemStyle: React.CSSProperties = {
-  marginBottom: '10px',
-  backgroundColor: '#fff',
-  borderRadius: '8px',
-  padding: '12px',
-  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
 };
 
 export default AdminDesafios;
