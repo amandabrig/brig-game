@@ -40,8 +40,26 @@ function ResponderDesafio() {
   };
 
   const handleSubmit = () => {
-    console.log('Respostas enviadas:', respostas);
-    alert('Desafio enviado com sucesso!');
+    if (!desafio) return;
+
+    const todasRespondidas = desafio.perguntas.every((p) => {
+      const resposta = respostas[p.id];
+      if (p.tipo === 'quiz') return resposta !== undefined;
+      if (p.tipo === 'texto') return resposta && resposta.trim().length > 0;
+      if (p.tipo === 'upload') return resposta instanceof File;
+      return false;
+    });
+
+    if (!todasRespondidas) {
+      alert('Por favor, responda todas as perguntas antes de enviar.');
+      return;
+    }
+
+    const enviados = JSON.parse(localStorage.getItem('respostas') || '[]');
+    enviados.push({ desafioId: desafio.id, respostas });
+    localStorage.setItem('respostas', JSON.stringify(enviados));
+
+    alert('Respostas enviadas com sucesso!');
   };
 
   if (!desafio) return <div style={pageStyle}>Carregando desafio...</div>;
