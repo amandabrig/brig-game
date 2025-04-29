@@ -91,84 +91,92 @@ function AdminDesafios() {
   };
 
   return (
-    <div style={{ padding: 32, background: '#F5F0EB', minHeight: '100vh' }}>
-      <h1>Administração de Desafios</h1>
+    <div style={pageStyle}>
+      <h1 style={titleStyle}>Administração de Desafios</h1>
 
-      <div style={{ marginTop: 24, background: '#fff', padding: 24, borderRadius: 12 }}>
+      <div style={cardStyle}>
         <h2>{editandoId ? 'Editar' : 'Novo'} Desafio</h2>
-        <input
-          value={titulo}
-          onChange={(e) => setTitulo(e.target.value)}
-          placeholder="Título"
-          style={inputStyle}
-        />
-        <textarea
-          value={descricao}
-          onChange={(e) => setDescricao(e.target.value)}
-          placeholder="Descrição"
-          style={{ ...inputStyle, height: 60 }}
-        />
 
-        <h3 style={{ marginTop: 16 }}>Adicionar Pergunta</h3>
-        <select value={tipo} onChange={(e) => setTipo(e.target.value as TipoPergunta)} style={inputStyle}>
-          <option value="quiz">Múltipla escolha</option>
-          <option value="texto">Resposta aberta</option>
-          <option value="upload">Envio de arquivo</option>
-        </select>
+        <div style={sectionStyle}>
+          <input
+            value={titulo}
+            onChange={(e) => setTitulo(e.target.value)}
+            placeholder="Título"
+            style={inputStyle}
+          />
+          <textarea
+            value={descricao}
+            onChange={(e) => setDescricao(e.target.value)}
+            placeholder="Descrição"
+            style={{ ...inputStyle, height: 60 }}
+          />
+        </div>
 
-        <input
-          value={enunciado}
-          onChange={(e) => setEnunciado(e.target.value)}
-          placeholder="Enunciado da pergunta"
-          style={inputStyle}
-        />
-
-        {tipo === 'quiz' && (
-          <>
-            {alternativas.map((alt, i) => (
-              <input
-                key={i}
-                value={alt}
-                placeholder={`Alternativa ${i + 1}`}
-                onChange={(e) => {
-                  const novas = [...alternativas];
-                  novas[i] = e.target.value;
-                  setAlternativas(novas);
-                }}
-                style={inputStyle}
-              />
+        <div style={sectionStyle}>
+          <h3>Perguntas adicionadas</h3>
+          <ul>
+            {perguntas.map((p) => (
+              <li key={p.id}>
+                ✅ [{p.tipo}] {p.enunciado}
+              </li>
             ))}
-            <select value={correta} onChange={(e) => setCorreta(Number(e.target.value))} style={inputStyle}>
-              {[0, 1, 2, 3].map((i) => (
-                <option key={i} value={i}>
-                  Correta: Alternativa {i + 1}
-                </option>
+          </ul>
+        </div>
+
+        <div style={sectionStyle}>
+          <h3>Nova Pergunta</h3>
+          <select value={tipo} onChange={(e) => setTipo(e.target.value as TipoPergunta)} style={inputStyle}>
+            <option value="quiz">Múltipla escolha</option>
+            <option value="texto">Resposta aberta</option>
+            <option value="upload">Envio de arquivo</option>
+          </select>
+
+          <input
+            value={enunciado}
+            onChange={(e) => setEnunciado(e.target.value)}
+            placeholder="Enunciado da pergunta"
+            style={inputStyle}
+          />
+
+          {tipo === 'quiz' && (
+            <>
+              {alternativas.map((alt, i) => (
+                <input
+                  key={i}
+                  value={alt}
+                  placeholder={`Alternativa ${i + 1}`}
+                  onChange={(e) => {
+                    const novas = [...alternativas];
+                    novas[i] = e.target.value;
+                    setAlternativas(novas);
+                  }}
+                  style={inputStyle}
+                />
               ))}
-            </select>
-          </>
-        )}
+              <select value={correta} onChange={(e) => setCorreta(Number(e.target.value))} style={inputStyle}>
+                {[0, 1, 2, 3].map((i) => (
+                  <option key={i} value={i}>
+                    Correta: Alternativa {i + 1}
+                  </option>
+                ))}
+              </select>
+            </>
+          )}
 
-        <button onClick={adicionarPergunta} style={buttonStyle}>
-          Adicionar Pergunta
-        </button>
-
-        <ul>
-          {perguntas.map((p) => (
-            <li key={p.id} style={{ marginTop: 12 }}>
-              ✅ [{p.tipo}] {p.enunciado}
-            </li>
-          ))}
-        </ul>
+          <button onClick={adicionarPergunta} style={buttonStyle}>
+            ➕ Adicionar Pergunta
+          </button>
+        </div>
 
         <button onClick={salvarDesafio} style={buttonStyle}>
-          {editandoId ? 'Atualizar' : 'Salvar'} Desafio
+          💾 {editandoId ? 'Atualizar' : 'Salvar'} Desafio
         </button>
       </div>
 
       <h2 style={{ marginTop: 40 }}>Desafios Cadastrados</h2>
       <ul>
         {desafios.map((d) => (
-          <li key={d.id} style={{ marginBottom: 16, background: '#fff', padding: 16, borderRadius: 12 }}>
+          <li key={d.id} style={listItemStyle}>
             <strong>{d.titulo}</strong>
             <br />
             {d.perguntas?.length || 0} perguntas
@@ -182,6 +190,30 @@ function AdminDesafios() {
     </div>
   );
 }
+
+const pageStyle: React.CSSProperties = {
+  backgroundColor: '#F5F0EB',
+  minHeight: '100vh',
+  padding: '32px',
+  fontFamily: 'sans-serif',
+  color: '#5C4A35',
+};
+
+const titleStyle: React.CSSProperties = {
+  fontSize: '28px',
+  marginBottom: '24px',
+};
+
+const cardStyle: React.CSSProperties = {
+  background: '#fff',
+  padding: '24px',
+  borderRadius: '12px',
+  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+};
+
+const sectionStyle: React.CSSProperties = {
+  marginTop: '24px',
+};
 
 const inputStyle: React.CSSProperties = {
   padding: '10px',
@@ -199,6 +231,14 @@ const buttonStyle: React.CSSProperties = {
   border: 'none',
   borderRadius: 8,
   cursor: 'pointer',
+};
+
+const listItemStyle: React.CSSProperties = {
+  marginBottom: 16,
+  background: '#fff',
+  padding: 16,
+  borderRadius: 12,
+  boxShadow: '0 1px 4px rgba(0,0,0,0.05)'
 };
 
 export default AdminDesafios;
