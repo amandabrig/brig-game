@@ -49,24 +49,18 @@ function BottomNav() {
 
   return (
     <nav style={navStyle}>
-      <button
-        onClick={() => navigate('/desafios')}
-        style={location.pathname === '/desafios' ? navButtonActive : navButtonStyle}
-      >
-        📋
-      </button>
-      <button
-        onClick={() => navigate('/ranking')}
-        style={location.pathname === '/ranking' ? navButtonActive : navButtonStyle}
-      >
-        🏆
-      </button>
-      <button
-        onClick={() => navigate('/perfil')}
-        style={location.pathname === '/perfil' ? navButtonActive : navButtonStyle}
-      >
-        👤
-      </button>
+      <div onClick={() => navigate('/desafios')} style={navItemStyle}>
+        <span style={location.pathname === '/desafios' ? navIconActive : navIcon}>📋</span>
+        <span style={location.pathname === '/desafios' ? navLabelActive : navLabel}>Desafios</span>
+      </div>
+      <div onClick={() => navigate('/ranking')} style={navItemStyle}>
+        <span style={location.pathname === '/ranking' ? navIconActive : navIcon}>🏆</span>
+        <span style={location.pathname === '/ranking' ? navLabelActive : navLabel}>Ranking</span>
+      </div>
+      <div onClick={() => navigate('/perfil')} style={navItemStyle}>
+        <span style={location.pathname === '/perfil' ? navIconActive : navIcon}>👤</span>
+        <span style={location.pathname === '/perfil' ? navLabelActive : navLabel}>Perfil</span>
+      </div>
     </nav>
   );
 }
@@ -82,20 +76,38 @@ const navStyle: React.CSSProperties = {
   height: '60px',
   backgroundColor: '#fff',
   borderTop: '1px solid #ccc',
+  fontFamily: 'sans-serif',
 };
 
-const navButtonStyle: React.CSSProperties = {
-  background: 'none',
-  border: 'none',
-  fontSize: '24px',
-  color: '#7A6855',
+const navItemStyle: React.CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontSize: '14px',
   cursor: 'pointer',
 };
 
-const navButtonActive: React.CSSProperties = {
-  ...navButtonStyle,
+const navIcon: React.CSSProperties = {
+  fontSize: '20px',
+  color: '#7A6855',
+};
+
+const navIconActive: React.CSSProperties = {
+  ...navIcon,
   color: '#000',
+};
+
+const navLabel: React.CSSProperties = {
+  fontSize: '12px',
+  color: '#7A6855',
+  marginTop: '2px',
+};
+
+const navLabelActive: React.CSSProperties = {
+  ...navLabel,
   fontWeight: 'bold',
+  color: '#000',
 };
 
 export default AppWrapper;
