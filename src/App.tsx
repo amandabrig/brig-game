@@ -6,6 +6,7 @@ import Registro from './pages/Registro';
 import Ranking from './pages/Ranking';
 import PerfilDinamico from './pages/PerfilDinamico';
 import AdminDesafios from './pages/AdminDesafios';
+import ResponderDesafio from './pages/ResponderDesafio';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/ranking" element={<Ranking />} />
         <Route path="/perfil/:id" element={<PerfilDinamico />} />
         <Route path="/admin/desafios" element={<AdminDesafios />} />
+        <Route path="/responder-desafio" element={<ResponderDesafio />} />
       </Routes>
     </Router>
   );
