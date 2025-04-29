@@ -60,12 +60,12 @@ const topoStyle = {
   marginBottom: '24px'
 };
 
-const fotoStyle = {
-  width: '80px',
-  height: '80px',
-  borderRadius: '50%',
-  objectFit: 'cover'
-};
+const fotoStyle: React.CSSProperties = {
+    width: '80px',
+    height: '80px',
+    borderRadius: '50%',
+    objectFit: 'cover' as React.CSSProperties['objectFit']
+  };
 
 const nomeStyle = {
   margin: '0',
