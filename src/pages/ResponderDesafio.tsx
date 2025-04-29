@@ -1,58 +1,96 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+
+interface Pergunta {
+  id: number;
+  tipo: 'quiz' | 'texto' | 'upload';
+  enunciado: string;
+  alternativas?: string[];
+  correta?: number;
+}
+
+interface Desafio {
+  id: number;
+  titulo: string;
+  descricao: string;
+  perguntas: Pergunta[];
+}
 
 function ResponderDesafio() {
-  const [tipo] = useState<'quiz' | 'upload'>('quiz'); // Aqui futuramente virá da base de dados
-  const [respostaSelecionada, setRespostaSelecionada] = useState<number | null>(null);
-  const [arquivo, setArquivo] = useState<File | null>(null);
+  const [params] = useSearchParams();
+  const [desafio, setDesafio] = useState<Desafio | null>(null);
+  const [respostas, setRespostas] = useState<Record<number, any>>({});
 
-  const alternativas = ['Opção A', 'Opção B', 'Opção C', 'Opção D'];
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (tipo === 'quiz') {
-      console.log('Resposta selecionada:', respostaSelecionada);
-    } else {
-      console.log('Arquivo enviado:', arquivo);
+  useEffect(() => {
+    const id = Number(params.get('id'));
+    const dados = localStorage.getItem('desafios');
+    if (dados) {
+      const lista: Desafio[] = JSON.parse(dados);
+      const encontrado = lista.find((d) => d.id === id);
+      if (encontrado) setDesafio(encontrado);
     }
-    alert('Resposta enviada com sucesso!');
+  }, [params]);
+
+  const handleChange = (id: number, valor: any) => {
+    setRespostas({ ...respostas, [id]: valor });
   };
+
+  const handleUpload = (id: number, files: FileList | null) => {
+    setRespostas({ ...respostas, [id]: files?.[0] || null });
+  };
+
+  const handleSubmit = () => {
+    console.log('Respostas enviadas:', respostas);
+    alert('Desafio enviado com sucesso!');
+  };
+
+  if (!desafio) return <div style={pageStyle}>Carregando desafio...</div>;
 
   return (
     <div style={pageStyle}>
-      <h1 style={titleStyle}>Desafio: Nome do Desafio</h1>
-      <p style={descricaoStyle}>Descrição breve sobre o desafio...</p>
+      <h1>{desafio.titulo}</h1>
+      <p>{desafio.descricao}</p>
 
-      <form onSubmit={handleSubmit} style={formStyle}>
-        {tipo === 'quiz' && (
-          <div style={quizContainerStyle}>
-            {alternativas.map((alt, index) => (
-              <label key={index} style={alternativaStyle}>
-                <input
-                  type="radio"
-                  name="resposta"
-                  value={index}
-                  checked={respostaSelecionada === index}
-                  onChange={() => setRespostaSelecionada(index)}
-                  required
-                />
-                {alt}
-              </label>
-            ))}
-          </div>
-        )}
+      {desafio.perguntas.map((pergunta, index) => (
+        <div key={pergunta.id} style={cardStyle}>
+          <p><strong>{index + 1}.</strong> {pergunta.enunciado}</p>
 
-        {tipo === 'upload' && (
-          <div style={uploadContainerStyle}>
+          {pergunta.tipo === 'quiz' && (
+            <div>
+              {pergunta.alternativas?.map((alt, i) => (
+                <label key={i} style={{ display: 'block', marginBottom: 6 }}>
+                  <input
+                    type="radio"
+                    name={`pergunta-${pergunta.id}`}
+                    value={i}
+                    checked={respostas[pergunta.id] === i}
+                    onChange={() => handleChange(pergunta.id, i)}
+                  />{' '}{alt}
+                </label>
+              ))}
+            </div>
+          )}
+
+          {pergunta.tipo === 'texto' && (
+            <textarea
+              placeholder="Digite sua resposta"
+              value={respostas[pergunta.id] || ''}
+              onChange={(e) => handleChange(pergunta.id, e.target.value)}
+              style={inputStyle}
+            />
+          )}
+
+          {pergunta.tipo === 'upload' && (
             <input
               type="file"
-              onChange={(e) => setArquivo(e.target.files?.[0] || null)}
-              required
+              onChange={(e) => handleUpload(pergunta.id, e.target.files)}
+              style={inputStyle}
             />
-          </div>
-        )}
+          )}
+        </div>
+      ))}
 
-        <button type="submit" style={buttonStyle}>Enviar Resposta</button>
-      </form>
+      <button onClick={handleSubmit} style={buttonStyle}>Enviar Respostas</button>
     </div>
   );
 }
@@ -65,45 +103,29 @@ const pageStyle: React.CSSProperties = {
   color: '#5C4A35',
 };
 
-const titleStyle: React.CSSProperties = {
-  fontSize: '24px',
-  marginBottom: '16px',
+const cardStyle: React.CSSProperties = {
+  background: '#fff',
+  padding: '16px',
+  borderRadius: '12px',
+  marginBottom: '20px',
+  boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
 };
 
-const descricaoStyle: React.CSSProperties = {
-  fontSize: '16px',
-  marginBottom: '24px',
-};
-
-const formStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '16px',
-};
-
-const quizContainerStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '8px',
-};
-
-const alternativaStyle: React.CSSProperties = {
-  fontSize: '16px',
-};
-
-const uploadContainerStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '8px',
+const inputStyle: React.CSSProperties = {
+  marginTop: 8,
+  padding: '10px',
+  borderRadius: '6px',
+  border: '1px solid #C2B6A3',
+  width: '100%',
 };
 
 const buttonStyle: React.CSSProperties = {
+  marginTop: 20,
+  padding: '12px 24px',
   backgroundColor: '#7A6855',
   color: '#fff',
-  padding: '12px',
   border: 'none',
-  borderRadius: '8px',
-  fontSize: '16px',
+  borderRadius: 8,
   cursor: 'pointer',
 };
 
