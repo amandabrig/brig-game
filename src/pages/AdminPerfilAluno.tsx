@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 
 interface AlunoPerfil {
   nome: string;
@@ -7,109 +6,46 @@ interface AlunoPerfil {
   pontos: number;
   conquistas: string[];
   cursos: string[];
-  desafiosValidados: number[];
 }
 
-const conquistasDisponiveis = ['Primeiro Desafio', '10 Pontos', 'Desafio Criativo'];
-const cursosDisponiveis = ['Brig Game', 'Brig Club', 'Imersão de Páscoa'];
-
-function AdminPerfilAluno() {
-  const { usuario } = useParams();
+function Progresso() {
   const [aluno, setAluno] = useState<AlunoPerfil | null>(null);
-  const [conquista, setConquista] = useState('');
-  const [curso, setCurso] = useState('');
-  const [novoPonto, setNovoPonto] = useState(0);
 
   useEffect(() => {
-    const dados = localStorage.getItem('alunos');
-    if (dados && usuario) {
-      const lista: AlunoPerfil[] = JSON.parse(dados);
-      const encontrado = lista.find((a) => a.usuario === usuario);
-      if (encontrado) setAluno(encontrado);
-    }
-  }, [usuario]);
+    const dados = localStorage.getItem('alunoAtual');
+    if (dados) setAluno(JSON.parse(dados));
+  }, []);
 
-  const salvarAluno = (atualizado: AlunoPerfil) => {
-    setAluno(atualizado);
-    const dados = localStorage.getItem('alunos');
-    if (dados) {
-      let lista: AlunoPerfil[] = JSON.parse(dados);
-      lista = lista.map((a) => (a.usuario === atualizado.usuario ? atualizado : a));
-      localStorage.setItem('alunos', JSON.stringify(lista));
-    }
-  };
-
-  const adicionarPontos = () => {
-    if (!aluno) return;
-    salvarAluno({ ...aluno, pontos: aluno.pontos + novoPonto });
-    setNovoPonto(0);
-  };
-
-  const adicionarConquista = () => {
-    if (!aluno || !conquista || aluno.conquistas.includes(conquista)) return;
-    salvarAluno({ ...aluno, conquistas: [...aluno.conquistas, conquista] });
-  };
-
-  const removerConquista = (c: string) => {
-    if (!aluno) return;
-    salvarAluno({ ...aluno, conquistas: aluno.conquistas.filter((x) => x !== c) });
-  };
-
-  const adicionarCurso = () => {
-    if (!aluno || !curso || aluno.cursos.includes(curso)) return;
-    salvarAluno({ ...aluno, cursos: [...aluno.cursos, curso] });
-  };
-
-  const removerCurso = (c: string) => {
-    if (!aluno) return;
-    salvarAluno({ ...aluno, cursos: aluno.cursos.filter((x) => x !== c) });
-  };
-
-  if (!aluno) return <p style={pageStyle}>Carregando aluno...</p>;
+  if (!aluno) return <p style={pageStyle}>Carregando progresso...</p>;
 
   return (
     <div style={pageStyle}>
-      <h1>Perfil do Aluno</h1>
+      <h1>Seu Progresso</h1>
       <p><strong>Nome:</strong> {aluno.nome}</p>
       <p><strong>@:</strong> {aluno.usuario}</p>
       <p><strong>Pontos:</strong> {aluno.pontos}</p>
 
-      <h3>Editar Pontuação</h3>
-      <input
-        type="number"
-        value={novoPonto}
-        onChange={(e) => setNovoPonto(Number(e.target.value))}
-        style={inputStyle}
-      />
-      <button onClick={adicionarPontos} style={buttonStyle}>Adicionar Pontos</button>
-
       <h3>Conquistas</h3>
-      <ul>
-        {aluno.conquistas.map((c) => (
-          <li key={c}>{c} <button onClick={() => removerConquista(c)}>Remover</button></li>
-        ))}
-      </ul>
-      <select value={conquista} onChange={(e) => setConquista(e.target.value)} style={inputStyle}>
-        <option value="">Selecionar conquista</option>
-        {conquistasDisponiveis.map((c) => (
-          <option key={c} value={c}>{c}</option>
-        ))}
-      </select>
-      <button onClick={adicionarConquista} style={buttonStyle}>Adicionar Conquista</button>
+      {aluno.conquistas.length === 0 ? (
+        <p>Nenhuma conquista ainda.</p>
+      ) : (
+        <ul>
+          {aluno.conquistas.map((c, index) => (
+            <li key={index}>🏅 {c}</li>
+          ))}
+        </ul>
+      )}
 
-      <h3>Cursos</h3>
-      <ul>
-        {aluno.cursos.map((c) => (
-          <li key={c}>{c} <button onClick={() => removerCurso(c)}>Remover</button></li>
-        ))}
-      </ul>
-      <select value={curso} onChange={(e) => setCurso(e.target.value)} style={inputStyle}>
-        <option value="">Selecionar curso</option>
-        {cursosDisponiveis.map((c) => (
-          <option key={c} value={c}>{c}</option>
-        ))}
-      </select>
-      <button onClick={adicionarCurso} style={buttonStyle}>Adicionar Curso</button>
+      <h3>Cursos Realizados</h3>
+      {aluno.cursos.length === 0 ? (
+        <p>Nenhum curso concluído ainda.</p>
+      ) : (
+        <ul>
+          {aluno.cursos.map((c, index) => (
+            <li key={index}>📘 {c}</li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
@@ -122,23 +58,4 @@ const pageStyle: React.CSSProperties = {
   color: '#5C4A35',
 };
 
-const inputStyle: React.CSSProperties = {
-  padding: '10px',
-  marginTop: '8px',
-  marginBottom: '8px',
-  borderRadius: '6px',
-  border: '1px solid #C2B6A3',
-  width: '100%',
-};
-
-const buttonStyle: React.CSSProperties = {
-  backgroundColor: '#7A6855',
-  color: '#fff',
-  padding: '10px 16px',
-  border: 'none',
-  borderRadius: '8px',
-  cursor: 'pointer',
-  marginTop: '8px',
-};
-
-export default AdminPerfilAluno;
+export default Progresso;
