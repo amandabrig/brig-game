@@ -8,6 +8,7 @@ import PerfilDinamico from './pages/PerfilDinamico';
 import PerfilAluno from './pages/PerfilAluno';
 import AdminDesafios from './pages/AdminDesafios';
 import ResponderDesafio from './pages/ResponderDesafio';
+import AdminRespostas from './pages/AdminRespostas';
 
 function AppWrapper() {
   return (
@@ -37,6 +38,7 @@ function App() {
         <Route path="/perfil/:id" element={<PerfilDinamico />} />
         <Route path="/admin/desafios" element={<AdminDesafios />} />
         <Route path="/responder-desafio" element={<ResponderDesafio />} />
+        <Route path="/admin/respostas" element={<AdminRespostas />} />
       </Routes>
       {!hideNav && <BottomNav />}
     </div>
