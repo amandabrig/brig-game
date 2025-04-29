@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 interface AlunoPerfil {
   nome: string;
@@ -13,19 +14,29 @@ const conquistasDisponiveis = ['Primeiro Desafio', '10 Pontos', 'Desafio Criativ
 const cursosDisponiveis = ['Brig Game', 'Brig Club', 'Imersão de Páscoa'];
 
 function AdminPerfilAluno() {
+  const { usuario } = useParams();
   const [aluno, setAluno] = useState<AlunoPerfil | null>(null);
   const [conquista, setConquista] = useState('');
   const [curso, setCurso] = useState('');
   const [novoPonto, setNovoPonto] = useState(0);
 
   useEffect(() => {
-    const dados = localStorage.getItem('alunoAdmin');
-    if (dados) setAluno(JSON.parse(dados));
-  }, []);
+    const dados = localStorage.getItem('alunos');
+    if (dados && usuario) {
+      const lista: AlunoPerfil[] = JSON.parse(dados);
+      const encontrado = lista.find((a) => a.usuario === usuario);
+      if (encontrado) setAluno(encontrado);
+    }
+  }, [usuario]);
 
   const salvarAluno = (atualizado: AlunoPerfil) => {
     setAluno(atualizado);
-    localStorage.setItem('alunoAdmin', JSON.stringify(atualizado));
+    const dados = localStorage.getItem('alunos');
+    if (dados) {
+      let lista: AlunoPerfil[] = JSON.parse(dados);
+      lista = lista.map((a) => (a.usuario === atualizado.usuario ? atualizado : a));
+      localStorage.setItem('alunos', JSON.stringify(lista));
+    }
   };
 
   const adicionarPontos = () => {
