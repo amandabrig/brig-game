@@ -12,6 +12,7 @@ import AdminRespostas from './pages/AdminRespostas';
 import AdminPerfilAluno from './pages/AdminPerfilAluno';
 import ListaAlunosAdmin from './pages/ListaAlunosAdmin';
 
+
 function AppWrapper() {
   return (
     <Router>
