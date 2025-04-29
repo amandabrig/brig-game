@@ -1,6 +1,8 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Ranking() {
+  const navigate = useNavigate();
   const rankingData = [
     { nome: 'Amanda', usuario: '@amandabrig', xp: 850, foto: '/aluno1.png' },
     { nome: 'Luana', usuario: '@luana_doces', xp: 720, foto: '/aluno2.png' },
@@ -17,7 +19,10 @@ function Ranking() {
           <li key={index} style={itemStyle}>
             <div style={posicaoStyle}>{index + 1}º</div>
             <img src={aluno.foto} alt={aluno.nome} style={fotoStyle} />
-            <div>
+            <div
+              onClick={() => navigate(`/perfil/${aluno.usuario.replace('@', '')}`)}
+              style={nomeClickStyle}
+            >
               <strong>{aluno.nome}</strong>
               <div style={usuarioStyle}>{aluno.usuario}</div>
             </div>
@@ -29,27 +34,27 @@ function Ranking() {
   );
 }
 
-const pageStyle: React.CSSProperties = {
+const pageStyle = {
   backgroundColor: '#F5F0EB',
   minHeight: '100vh',
   padding: '32px',
   fontFamily: 'sans-serif',
-  color: '#5C4A35',
+  color: '#5C4A35'
 };
 
-const titleStyle: React.CSSProperties = {
+const titleStyle = {
   fontSize: '28px',
   textAlign: 'center',
-  marginBottom: '24px',
+  marginBottom: '24px'
 };
 
-const listStyle: React.CSSProperties = {
+const listStyle = {
   listStyle: 'none',
   padding: 0,
-  margin: 0,
+  margin: 0
 };
 
-const itemStyle: React.CSSProperties = {
+const itemStyle = {
   display: 'flex',
   alignItems: 'center',
   backgroundColor: '#FFF',
@@ -57,30 +62,35 @@ const itemStyle: React.CSSProperties = {
   padding: '16px',
   marginBottom: '12px',
   boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-  justifyContent: 'space-between',
+  justifyContent: 'space-between'
 };
 
-const posicaoStyle: React.CSSProperties = {
+const posicaoStyle = {
   fontSize: '18px',
   width: '40px',
-  fontWeight: 600,
+  fontWeight: 600
 };
 
-const fotoStyle: React.CSSProperties = {
+const fotoStyle = {
   width: '48px',
   height: '48px',
   borderRadius: '50%',
-  marginRight: '16px',
+  marginRight: '16px'
 };
 
-const usuarioStyle: React.CSSProperties = {
+const usuarioStyle = {
   fontSize: '14px',
-  color: '#8A7660',
+  color: '#8A7660'
 };
 
-const xpStyle: React.CSSProperties = {
+const xpStyle = {
   fontSize: '16px',
-  fontWeight: 600,
+  fontWeight: 600
+};
+
+const nomeClickStyle = {
+  cursor: 'pointer',
+  textAlign: 'left'
 };
 
 export default Ranking;
