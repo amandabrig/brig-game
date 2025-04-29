@@ -42,9 +42,9 @@ const pageStyle = {
   color: '#5C4A35'
 };
 
-const titleStyle = {
+const titleStyle: React.CSSProperties = {
   fontSize: '28px',
-  textAlign: 'center',
+  textAlign: 'center' as React.CSSProperties['textAlign'],
   marginBottom: '24px'
 };
 
@@ -88,9 +88,9 @@ const xpStyle = {
   fontWeight: 600
 };
 
-const nomeClickStyle = {
+const nomeClickStyle: React.CSSProperties = {
   cursor: 'pointer',
-  textAlign: 'left'
+  textAlign: 'left' as React.CSSProperties['textAlign']
 };
 
 export default Ranking;
