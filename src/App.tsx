@@ -3,7 +3,9 @@ import Login from './pages/Login';
 import Progresso from './pages/Progresso';
 import Desafios from './pages/Desafios';
 import Registro from './pages/Registro';
-import Ranking from './pages/Ranking'; // ✅ novo import
+import Ranking from './pages/Ranking';
+import PerfilDinamico from './pages/PerfilDinamico';
+import AdminDesafios from './pages/AdminDesafios';
 
 function App() {
   return (
@@ -13,13 +15,12 @@ function App() {
         <Route path="/progresso" element={<Progresso />} />
         <Route path="/desafios" element={<Desafios />} />
         <Route path="/registro" element={<Registro />} />
-        <Route path="/ranking" element={<Ranking />} /> {/* ✅ nova rota */}
+        <Route path="/ranking" element={<Ranking />} />
+        <Route path="/perfil/:id" element={<PerfilDinamico />} />
+        <Route path="/admin/desafios" element={<AdminDesafios />} />
       </Routes>
     </Router>
   );
 }
 
 export default App;
-import PerfilDinamico from './pages/PerfilDinamico';
-
-<Route path="/perfil/:id" element={<PerfilDinamico />} />
