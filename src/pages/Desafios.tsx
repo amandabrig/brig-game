@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-type TipoDesafio = 'quiz' | 'texto' | 'upload';
-
 interface Desafio {
   id: number;
-  tipo: TipoDesafio;
   titulo: string;
   descricao: string;
+  perguntas: Pergunta[];
+}
+
+interface Pergunta {
+  id: number;
+  tipo: 'quiz' | 'texto' | 'upload';
+  enunciado: string;
+  alternativas?: string[];
+  correta?: number;
 }
 
 function Desafios() {
@@ -15,10 +21,8 @@ function Desafios() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const salvos = localStorage.getItem('desafios');
-    if (salvos) {
-      setDesafios(JSON.parse(salvos));
-    }
+    const dados = localStorage.getItem('desafios');
+    if (dados) setDesafios(JSON.parse(dados));
   }, []);
 
   return (
@@ -27,29 +31,19 @@ function Desafios() {
       {desafios.length === 0 ? (
         <p style={{ textAlign: 'center' }}>Nenhum desafio cadastrado ainda.</p>
       ) : (
-        <ul style={listStyle}>
-          {desafios.map((d) => (
-            <li key={d.id} style={itemStyle}>
-              <h3 style={{ marginBottom: '8px' }}>{d.titulo}</h3>
-              <p style={{ fontSize: '14px', color: '#7A6855' }}>{d.descricao}</p>
-              <p style={{ fontSize: '12px', marginTop: '4px' }}>
-                Tipo: <strong>{tipoLabel(d.tipo)}</strong>
-              </p>
-              <button style={buttonStyle} onClick={() => navigate(`/responder-desafio?id=${d.id}`)}>
-                Responder
-              </button>
-            </li>
-          ))}
-        </ul>
+        desafios.map((desafio) => (
+          <div key={desafio.id} style={cardStyle}>
+            <h2>{desafio.titulo}</h2>
+            <p>{desafio.descricao}</p>
+            <p><strong>{desafio.perguntas.length}</strong> perguntas</p>
+            <button onClick={() => navigate(`/responder-desafio?id=${desafio.id}`)} style={buttonStyle}>
+              Responder
+            </button>
+          </div>
+        ))
       )}
     </div>
   );
-}
-
-function tipoLabel(tipo: TipoDesafio) {
-  if (tipo === 'quiz') return 'Múltipla escolha';
-  if (tipo === 'texto') return 'Resposta aberta';
-  return 'Envio de arquivo';
 }
 
 const pageStyle: React.CSSProperties = {
@@ -66,22 +60,15 @@ const titleStyle: React.CSSProperties = {
   textAlign: 'center',
 };
 
-const listStyle: React.CSSProperties = {
-  listStyle: 'none',
-  padding: 0,
-  margin: 0,
-};
-
-const itemStyle: React.CSSProperties = {
+const cardStyle: React.CSSProperties = {
   backgroundColor: '#fff',
+  padding: '20px',
   borderRadius: '12px',
-  padding: '16px',
-  marginBottom: '16px',
+  marginBottom: '20px',
   boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
 };
 
 const buttonStyle: React.CSSProperties = {
-  marginTop: '10px',
   backgroundColor: '#7A6855',
   color: '#fff',
   padding: '10px 16px',
@@ -89,6 +76,7 @@ const buttonStyle: React.CSSProperties = {
   borderRadius: '8px',
   cursor: 'pointer',
   fontSize: '14px',
+  marginTop: '10px'
 };
 
 export default Desafios;
