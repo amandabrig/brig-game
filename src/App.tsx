@@ -19,7 +19,11 @@ function AppWrapper() {
 
 function App() {
   const location = useLocation();
-  const hideNav = location.pathname.startsWith('/admin');
+
+  const hideNav =
+    location.pathname === '/' ||
+    location.pathname === '/registro' ||
+    location.pathname.startsWith('/admin');
 
   return (
     <div style={{ paddingBottom: hideNav ? 0 : '60px' }}>
@@ -48,15 +52,21 @@ function BottomNav() {
       <button
         onClick={() => navigate('/desafios')}
         style={location.pathname === '/desafios' ? navButtonActive : navButtonStyle}
-      >📋</button>
+      >
+        📋
+      </button>
       <button
         onClick={() => navigate('/ranking')}
         style={location.pathname === '/ranking' ? navButtonActive : navButtonStyle}
-      >🏆</button>
+      >
+        🏆
+      </button>
       <button
         onClick={() => navigate('/perfil')}
         style={location.pathname === '/perfil' ? navButtonActive : navButtonStyle}
-      >👤</button>
+      >
+        👤
+      </button>
     </nav>
   );
 }
