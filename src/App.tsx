@@ -9,6 +9,7 @@ import PerfilAluno from './pages/PerfilAluno';
 import AdminDesafios from './pages/AdminDesafios';
 import ResponderDesafio from './pages/ResponderDesafio';
 import AdminRespostas from './pages/AdminRespostas';
+import AdminPerfilAluno from './pages/AdminPerfilAluno';
 
 function AppWrapper() {
   return (
@@ -39,6 +40,8 @@ function App() {
         <Route path="/admin/desafios" element={<AdminDesafios />} />
         <Route path="/responder-desafio" element={<ResponderDesafio />} />
         <Route path="/admin/respostas" element={<AdminRespostas />} />
+        <Route path="/admin/perfil" element={<AdminPerfilAluno />} />
+        
       </Routes>
       {!hideNav && <BottomNav />}
     </div>
