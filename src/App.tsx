@@ -10,6 +10,7 @@ import AdminDesafios from './pages/AdminDesafios';
 import ResponderDesafio from './pages/ResponderDesafio';
 import AdminRespostas from './pages/AdminRespostas';
 import AdminPerfilAluno from './pages/AdminPerfilAluno';
+import ListaAlunosAdmin from './pages/ListaAlunosAdmin';
 
 function AppWrapper() {
   return (
@@ -41,6 +42,7 @@ function App() {
         <Route path="/responder-desafio" element={<ResponderDesafio />} />
         <Route path="/admin/respostas" element={<AdminRespostas />} />
         <Route path="/admin/perfil" element={<AdminPerfilAluno />} />
+        <Route path="/admin/perfil/:usuario" element={<AdminPerfilAluno />} />
         
       </Routes>
       {!hideNav && <BottomNav />}
