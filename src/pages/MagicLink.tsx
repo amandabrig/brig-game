@@ -1,114 +1,37 @@
-import React, { useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
-function CriarSenha() {
-  const [senha, setSenha] = useState('');
-  const [confirmarSenha, setConfirmarSenha] = useState('');
-  const [erro, setErro] = useState('');
-  const [sucesso, setSucesso] = useState(false);
+function MagicLink() {
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErro('');
+  useEffect(() => {
+    const handleMagicLink = async () => {
+      const hash = window.location.hash;
+      const queryParams = new URLSearchParams(hash.replace('#', ''));
+      const accessToken = queryParams.get('access_token');
+      const refreshToken = queryParams.get('refresh_token');
 
-    if (senha !== confirmarSenha) {
-      setErro('As senhas não coincidem.');
-      return;
-    }
+      if (accessToken && refreshToken) {
+        const { error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken
+        });
 
-    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-    const user = sessionData?.session?.user;
+        if (!error) {
+          navigate('/criar-senha'); // ou /progresso, dependendo do fluxo
+        } else {
+          console.error('Erro ao autenticar com magic link:', error.message);
+        }
+      } else {
+        console.warn('Tokens não encontrados na URL');
+      }
+    };
 
-    if (!user) {
-      setErro('Usuário não autenticado.');
-      return;
-    }
+    handleMagicLink();
+  }, [navigate]);
 
-    const { error: updateError } = await supabase.auth.updateUser({
-      password: senha,
-    });
-
-    if (updateError) {
-      setErro('Erro ao definir a senha.');
-      return;
-    }
-
-    await supabase.from('usuarios').update({ senha_definida: true }).eq('id', user.id);
-
-    setSucesso(true);
-    setTimeout(() => navigate('/progresso'), 2000);
-  };
-
-  return (
-    <div style={pageStyle}>
-      <h1 style={titleStyle}>Criar Senha</h1>
-      <form onSubmit={handleSubmit} style={formStyle}>
-        <input
-          type="password"
-          placeholder="Nova senha"
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
-          required
-          style={inputStyle}
-        />
-        <input
-          type="password"
-          placeholder="Confirmar senha"
-          value={confirmarSenha}
-          onChange={(e) => setConfirmarSenha(e.target.value)}
-          required
-          style={inputStyle}
-        />
-        <button type="submit" style={buttonStyle}>Salvar</button>
-        {erro && <p style={{ color: 'red' }}>{erro}</p>}
-        {sucesso && <p style={{ color: 'green' }}>Senha criada com sucesso!</p>}
-      </form>
-    </div>
-  );
+  return <p style={{ textAlign: 'center', marginTop: '100px' }}>Autenticando...</p>;
 }
 
-const pageStyle: React.CSSProperties = {
-  backgroundColor: '#F5F0EB',
-  minHeight: '100vh',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontFamily: 'sans-serif',
-  padding: '32px',
-};
-
-const titleStyle: React.CSSProperties = {
-  fontSize: '28px',
-  marginBottom: '24px',
-  color: '#5C4A35',
-};
-
-const formStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '16px',
-  width: '100%',
-  maxWidth: '320px',
-};
-
-const inputStyle: React.CSSProperties = {
-  padding: '12px',
-  fontSize: '16px',
-  borderRadius: '8px',
-  border: '1px solid #C2B6A3',
-};
-
-const buttonStyle: React.CSSProperties = {
-  backgroundColor: '#7A6855',
-  color: '#fff',
-  padding: '12px',
-  border: 'none',
-  borderRadius: '8px',
-  fontSize: '16px',
-  cursor: 'pointer',
-};
-
-export default CriarSenha;
+export default MagicLink;
