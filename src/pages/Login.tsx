@@ -1,77 +1,96 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import styles from '../styles/Button.module.css';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 
 function Login() {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [erro, setErro] = useState('');
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErro('');
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password: senha,
+    });
+
+    if (error) {
+      setErro('Email ou senha inválidos.');
+    } else {
+      navigate('/progresso');
+    }
+  };
+
   return (
     <div style={pageStyle}>
-      <img src="/brig-game-logo.png" alt="Logo Brig Game" style={logoStyle} />
-
-      <h1 style={titleStyle}>Bem-vindo ao Brig Game</h1>
-
-      <form style={formStyle}>
-        <input type="email" placeholder="E-mail" style={inputStyle} />
-        <input type="password" placeholder="Senha" style={inputStyle} />
-        <button type="submit" className={styles.button}>Entrar</button>
+      <h1 style={titleStyle}>Entrar no Brig Game</h1>
+      <form onSubmit={handleLogin} style={formStyle}>
+        <input
+          type="email"
+          placeholder="Seu e-mail"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          style={inputStyle}
+        />
+        <input
+          type="password"
+          placeholder="Sua senha"
+          value={senha}
+          onChange={(e) => setSenha(e.target.value)}
+          required
+          style={inputStyle}
+        />
+        <button type="submit" style={buttonStyle}>Entrar</button>
+        {erro && <p style={{ color: 'red' }}>{erro}</p>}
       </form>
-
-      <p style={textStyle}>ou</p>
-
-      <button className={styles.button}>Entrar com Google</button>
-
-      <p style={smallTextStyle}>
-        Não tem conta? <Link to="/registro" style={{ color: '#7A6855' }}>Criar Conta</Link>
-      </p>
     </div>
   );
 }
 
-// Estilos
 const pageStyle: React.CSSProperties = {
-  minHeight: '100vh',
   backgroundColor: '#F5F0EB',
+  minHeight: '100vh',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
-  padding: '20px',
-};
-
-const logoStyle: React.CSSProperties = {
-  width: '150px',
-  marginBottom: '20px',
+  fontFamily: 'sans-serif',
+  padding: '32px',
 };
 
 const titleStyle: React.CSSProperties = {
-  color: '#7A6855',
-  marginBottom: '12px',
   fontSize: '28px',
+  marginBottom: '24px',
+  color: '#5C4A35',
 };
 
 const formStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
+  gap: '16px',
   width: '100%',
-  maxWidth: '300px',
-  marginBottom: '20px',
+  maxWidth: '320px',
 };
 
 const inputStyle: React.CSSProperties = {
-  padding: '10px',
-  marginBottom: '12px',
+  padding: '12px',
+  fontSize: '16px',
   borderRadius: '8px',
   border: '1px solid #C2B6A3',
+};
+
+const buttonStyle: React.CSSProperties = {
+  backgroundColor: '#7A6855',
+  color: '#fff',
+  padding: '12px',
+  border: 'none',
+  borderRadius: '8px',
   fontSize: '16px',
-};
-
-const textStyle: React.CSSProperties = {
-  color: '#7A6855',
-  marginBottom: '12px',
-};
-
-const smallTextStyle: React.CSSProperties = {
-  color: '#7A6855',
-  fontSize: '14px',
+  cursor: 'pointer',
 };
 
 export default Login;
