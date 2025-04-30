@@ -48,7 +48,7 @@ function App() {
         <Route path="/admin/perfil/:usuario" element={<AdminPerfilAluno />} />
         <Route path="/trocar-senha" element={<TrocarSenha />} />
         <Route path="/criar-senha" element={<CriarSenha />} />
-        <Route path="/magic-link" element={<MagicLink />} />
+        <Route path="/auth/callback" element={<MagicLink />} />
       </Routes>
       {!hideNav && <BottomNav />}
     </div>
