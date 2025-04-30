@@ -7,18 +7,32 @@ function MagicLink() {
   const [status, setStatus] = useState('Verificando...');
 
   useEffect(() => {
-    const verifySession = async () => {
-      const { data, error } = await supabase.auth.getSession();
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      const session = data?.session;
 
-      if (data?.session) {
-        setStatus('Login bem-sucedido! Redirecionando...');
-        setTimeout(() => navigate('/progresso'), 1500);
+      if (session) {
+        const user = session.user;
+
+        const { data: perfil } = await supabase
+          .from('usuarios')
+          .select('senha_definida')
+          .eq('id', user.id)
+          .single();
+
+        if (perfil?.senha_definida) {
+          setStatus('Login bem-sucedido!');
+          navigate('/progresso');
+        } else {
+          setStatus('Redirecionando para definir senha...');
+          navigate('/registro');
+        }
       } else {
-        setStatus('Link inválido ou expirado.');
+        setStatus('Link expirado ou inválido.');
       }
     };
 
-    verifySession();
+    checkSession();
   }, [navigate]);
 
   return (
