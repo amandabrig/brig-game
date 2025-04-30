@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase'; // ajuste o caminho se necessário
+import { supabase } from '../lib/supabase';
 
 function Login() {
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ function Login() {
 
   return (
     <div style={pageStyle}>
-      <img src="/logo.png" alt="brig-game-logo.png" style={logoStyle} />
+      <img src="/brig-game-logo.png" alt="Logo do Brig Game" style={logoStyle} />
       <h1 style={titleStyle}>Entrar no Brig Game</h1>
       <form onSubmit={handleLogin} style={formStyle}>
         <input
