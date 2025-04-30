@@ -12,6 +12,7 @@ import AdminRespostas from './pages/AdminRespostas';
 import AdminPerfilAluno from './pages/AdminPerfilAluno';
 import ListaAlunosAdmin from './pages/ListaAlunosAdmin';
 import TrocarSenha from './pages/TrocarSenha';
+import CriarSenha from './pages/CriarSenha';
 
 function AppWrapper() {
   return (
@@ -45,6 +46,7 @@ function App() {
         <Route path="/admin/alunos" element={<ListaAlunosAdmin />} />
         <Route path="/admin/perfil/:usuario" element={<AdminPerfilAluno />} />
         <Route path="/trocar-senha" element={<TrocarSenha />} />
+        <Route path="/criar-senha" element={<CriarSenha />} />
       </Routes>
       {!hideNav && <BottomNav />}
     </div>
