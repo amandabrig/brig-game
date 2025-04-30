@@ -13,6 +13,7 @@ import AdminPerfilAluno from './pages/AdminPerfilAluno';
 import ListaAlunosAdmin from './pages/ListaAlunosAdmin';
 import TrocarSenha from './pages/TrocarSenha';
 import CriarSenha from './pages/CriarSenha';
+import MagicLink from './pages/MagicLink';
 
 function AppWrapper() {
   return (
@@ -47,6 +48,7 @@ function App() {
         <Route path="/admin/perfil/:usuario" element={<AdminPerfilAluno />} />
         <Route path="/trocar-senha" element={<TrocarSenha />} />
         <Route path="/criar-senha" element={<CriarSenha />} />
+        <Route path="/magic-link" element={<MagicLink />} />
       </Routes>
       {!hideNav && <BottomNav />}
     </div>
