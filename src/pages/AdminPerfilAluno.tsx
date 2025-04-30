@@ -1,56 +1,58 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { createClient } from '@supabase/supabase-js';
 
-interface AlunoPerfil {
-  nome: string;
-  usuario: string;
-  pontos: number;
-  conquistas: string[];
-  cursos: string[];
-}
+// Recomendado: mover para um arquivo separado (ex: src/lib/supabase.ts)
+const supabaseUrl = 'https://qdvjfridtvrlbxqjqdwn.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFkdmpmcmlkdHZybGJ4cWpxZHduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU5NzA0OTAsImV4cCI6MjA2MTU0NjQ5MH0.6F2Rc53QUMvJ6oo3hZwdTj37Kbh2CGSunHZfTGWCL9g';
 
-function PerfilDinamico() {
-  const { id } = useParams();
-  const [aluno, setAluno] = useState<AlunoPerfil | null>(null);
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-  useEffect(() => {
-    const dados = localStorage.getItem('alunos');
-    if (dados && id) {
-      const lista: AlunoPerfil[] = JSON.parse(dados);
-      const encontrado = lista.find((a) => a.usuario.replace('@', '') === id);
-      if (encontrado) setAluno(encontrado);
+function Login() {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [erro, setErro] = useState('');
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErro('');
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password: senha,
+    });
+
+    if (error) {
+      setErro('Email ou senha inválidos.');
+    } else {
+      navigate('/progresso');
     }
-  }, [id]);
-
-  if (!aluno) return <p style={pageStyle}>Carregando perfil...</p>;
+  };
 
   return (
     <div style={pageStyle}>
-      <h1>{aluno.nome}</h1>
-      <p><strong>@{aluno.usuario}</strong></p>
-      <p><strong>Pontos:</strong> {aluno.pontos}</p>
-
-      <h3>Conquistas</h3>
-      {aluno.conquistas.length === 0 ? (
-        <p>Nenhuma conquista ainda.</p>
-      ) : (
-        <ul>
-          {aluno.conquistas.map((c, index) => (
-            <li key={index}>🏅 {c}</li>
-          ))}
-        </ul>
-      )}
-
-      <h3>Cursos Realizados</h3>
-      {aluno.cursos.length === 0 ? (
-        <p>Nenhum curso concluído ainda.</p>
-      ) : (
-        <ul>
-          {aluno.cursos.map((c, index) => (
-            <li key={index}>📘 {c}</li>
-          ))}
-        </ul>
-      )}
+      <h1 style={titleStyle}>Entrar no Brig Game</h1>
+      <form onSubmit={handleLogin} style={formStyle}>
+        <input
+          type="email"
+          placeholder="Seu e-mail"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          style={inputStyle}
+        />
+        <input
+          type="password"
+          placeholder="Sua senha"
+          value={senha}
+          onChange={(e) => setSenha(e.target.value)}
+          required
+          style={inputStyle}
+        />
+        <button type="submit" style={buttonStyle}>Entrar</button>
+        {erro && <p style={{ color: 'red' }}>{erro}</p>}
+      </form>
     </div>
   );
 }
@@ -58,9 +60,43 @@ function PerfilDinamico() {
 const pageStyle: React.CSSProperties = {
   backgroundColor: '#F5F0EB',
   minHeight: '100vh',
-  padding: '32px',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
   fontFamily: 'sans-serif',
+  padding: '32px',
+};
+
+const titleStyle: React.CSSProperties = {
+  fontSize: '28px',
+  marginBottom: '24px',
   color: '#5C4A35',
 };
 
-export default PerfilDinamico;
+const formStyle: React.CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '16px',
+  width: '100%',
+  maxWidth: '320px',
+};
+
+const inputStyle: React.CSSProperties = {
+  padding: '12px',
+  fontSize: '16px',
+  borderRadius: '8px',
+  border: '1px solid #C2B6A3',
+};
+
+const buttonStyle: React.CSSProperties = {
+  backgroundColor: '#7A6855',
+  color: '#fff',
+  padding: '12px',
+  border: 'none',
+  borderRadius: '8px',
+  fontSize: '16px',
+  cursor: 'pointer',
+};
+
+export default Login;
