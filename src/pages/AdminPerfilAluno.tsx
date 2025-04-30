@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../lib/supabase';
 
 // Recomendado: mover para um arquivo separado (ex: src/lib/supabase.ts)
 const supabaseUrl = 'https://qdvjfridtvrlbxqjqdwn.supabase.co';
