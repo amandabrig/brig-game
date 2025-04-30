@@ -20,7 +20,11 @@ function Login() {
     if (error) {
       setErro('Email ou senha inválidos.');
     } else {
-      navigate('/progresso');
+      if (senha === 'brig2025') {
+        navigate('/trocar-senha');
+      } else {
+        navigate('/progresso');
+      }
     }
   };
 
