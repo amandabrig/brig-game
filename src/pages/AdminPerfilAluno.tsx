@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
-
-// Recomendado: mover para um arquivo separado (ex: src/lib/supabase.ts)
-const supabaseUrl = 'https://qdvjfridtvrlbxqjqdwn.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFkdmpmcmlkdHZybGJ4cWpxZHduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU5NzA0OTAsImV4cCI6MjA2MTU0NjQ5MH0.6F2Rc53QUMvJ6oo3hZwdTj37Kbh2CGSunHZfTGWCL9g';
-
-const supabase = createClient(supabaseUrl, supabaseKey);
+import { supabase } from '../../lib/supabase';
 
 function Login() {
   const navigate = useNavigate();
