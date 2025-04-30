@@ -11,6 +11,7 @@ import ResponderDesafio from './pages/ResponderDesafio';
 import AdminRespostas from './pages/AdminRespostas';
 import AdminPerfilAluno from './pages/AdminPerfilAluno';
 import ListaAlunosAdmin from './pages/ListaAlunosAdmin';
+import TrocarSenha from './pages/TrocarSenha';
 
 function AppWrapper() {
   return (
@@ -43,6 +44,7 @@ function App() {
         <Route path="/admin/respostas" element={<AdminRespostas />} />
         <Route path="/admin/alunos" element={<ListaAlunosAdmin />} />
         <Route path="/admin/perfil/:usuario" element={<AdminPerfilAluno />} />
+        <Route path="/trocar-senha" element={<TrocarSenha />} />
       </Routes>
       {!hideNav && <BottomNav />}
     </div>
