@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../lib/supabase'; // ajuste o caminho se necessário
 
 function Login() {
   const navigate = useNavigate();
@@ -20,16 +20,13 @@ function Login() {
     if (error) {
       setErro('Email ou senha inválidos.');
     } else {
-      if (senha === 'brig2025') {
-        navigate('/trocar-senha');
-      } else {
-        navigate('/progresso');
-      }
+      navigate('/progresso');
     }
   };
 
   return (
     <div style={pageStyle}>
+      <img src="/logo.png" alt="Logo Brig Game" style={logoStyle} />
       <h1 style={titleStyle}>Entrar no Brig Game</h1>
       <form onSubmit={handleLogin} style={formStyle}>
         <input
@@ -64,6 +61,11 @@ const pageStyle: React.CSSProperties = {
   justifyContent: 'center',
   fontFamily: 'sans-serif',
   padding: '32px',
+};
+
+const logoStyle: React.CSSProperties = {
+  width: '120px',
+  marginBottom: '24px',
 };
 
 const titleStyle: React.CSSProperties = {
