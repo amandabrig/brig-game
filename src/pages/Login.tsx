@@ -26,7 +26,7 @@ function Login() {
 
   return (
     <div style={pageStyle}>
-      <img src="/logo.png" alt="brig-game-logo" style={logoStyle} />
+      <img src="/logo.png" alt="brig-game-logo.png" style={logoStyle} />
       <h1 style={titleStyle}>Entrar no Brig Game</h1>
       <form onSubmit={handleLogin} style={formStyle}>
         <input
